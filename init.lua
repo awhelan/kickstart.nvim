@@ -807,7 +807,12 @@ require('lazy').setup({
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
       local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
-      require('nvim-treesitter.install').ensure_installed(parsers)
+      local ts_install = require 'nvim-treesitter.install'
+      if ts_install.ensure_installed then
+        ts_install.ensure_installed(parsers)
+      else
+        require('nvim-treesitter').install(parsers)
+      end
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
           local buf, filetype = args.buf, args.match
