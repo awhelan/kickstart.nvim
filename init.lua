@@ -185,7 +185,9 @@ require('lazy').setup({
       },
     },
   },
-
+  {
+    'tpope/vim-fugitive',
+  },
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
