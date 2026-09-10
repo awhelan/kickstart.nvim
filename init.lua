@@ -22,10 +22,9 @@ vim.o.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  See `:help 'clipboard'`
-vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
+-- Keep normal yanks, deletes, changes, and puts in Neovim's internal registers.
+-- Use the explicit mappings below when content should cross into the OS clipboard.
+vim.o.clipboard = ''
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -77,6 +76,13 @@ vim.o.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+
+-- Promote content to the OS clipboard explicitly. KDE Connect synchronizes only
+-- this `+` register; Neovim's unnamed, numbered, and named registers stay local.
+vim.keymap.set({ 'n', 'x' }, '<leader>y', '"+y', { desc = 'Yank to system clipboard' })
+vim.keymap.set('n', '<leader>Y', '"+Y', { desc = 'Yank line to system clipboard' })
+vim.keymap.set({ 'n', 'x' }, '<leader>p', '"+p', { desc = 'Paste from system clipboard' })
+vim.keymap.set({ 'n', 'x' }, '<leader>P', '"+P', { desc = 'Paste before from system clipboard' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
