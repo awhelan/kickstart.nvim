@@ -593,7 +593,10 @@ require('lazy').setup({
         'stylua',
       })
 
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      require('mason-tool-installer').setup {
+        ensure_installed = ensure_installed,
+        run_on_start = vim.env.NVIM_BOOTSTRAP ~= '1',
+      }
 
       for name, server in pairs(servers) do
         vim.lsp.config(name, server)
@@ -812,12 +815,15 @@ require('lazy').setup({
     branch = 'main',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
-      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+      local parsers = require 'custom.parsers'
       local ts_install = require 'nvim-treesitter.install'
-      if ts_install.ensure_installed then
-        ts_install.ensure_installed(parsers)
-      else
-        require('nvim-treesitter').install(parsers)
+      -- Headless bootstrap waits explicitly after restoring the plugin lockfile.
+      if vim.env.NVIM_BOOTSTRAP ~= '1' then
+        if ts_install.ensure_installed then
+          ts_install.ensure_installed(parsers)
+        else
+          require('nvim-treesitter').install(parsers)
+        end
       end
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
